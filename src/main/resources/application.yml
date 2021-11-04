@@ -1,0 +1,15 @@
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 105600541641-kqdm04lknue99qvkm59kih7riuc5ipt3.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+            - email
+            - profile
