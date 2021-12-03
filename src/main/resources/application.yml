@@ -14,7 +14,16 @@ spring:
             - email
             - profile
 
-#es的配置
-  spring.elasticsearch.rest.uris=http://127.0. 0.1:9200
-  spring.data.elasticsearch.repositories.enabled=true
-  spring.data.elasticsearch.client.reactive.endpoints=127.0. 0.1:9200
+
+
+
+  elasticsearch:
+    rest:
+      uris: http://127.0.0.1:9200
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+      client:
+        reactive:
+          endpoints: 127.0.0.1:9200

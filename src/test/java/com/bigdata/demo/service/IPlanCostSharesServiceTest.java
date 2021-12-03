@@ -1,6 +1,6 @@
 package com.bigdata.demo.service;
 
-import static org.junit.Assert.*;
+
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +9,8 @@ import com.bigdata.demo.form.PlanCostSharesAddForm;
 import com.bigdata.demo.vo.PlanCostSharesVo;
 import com.bigdata.demo.vo.ResponseVo;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j

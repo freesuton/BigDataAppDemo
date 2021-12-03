@@ -7,16 +7,16 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "blog")
+@Document(indexName = "plan")
 @Data
-public class Article {
-  @Id
-  private String id;
-  private String title;
-  @Field(type = FieldType.Nested, includeInParent = true)
-  private List<Author> authors;
+public class PlanCostShareES {
+//  @Id
+//  private String oid;
+//  private String _org;
+//  @Field(type = FieldType.Nested, includeInParent = true)
+//  private List<Author> authors;
 
-  public Article(String title){
-    this.title =title;
-  }
+//  public Article(String title){
+//    this.title =title;
+//  }
 }

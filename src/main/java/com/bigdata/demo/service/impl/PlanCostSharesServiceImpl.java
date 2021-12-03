@@ -1,5 +1,6 @@
 package com.bigdata.demo.service.impl;
 
+import com.bigdata.demo.domain.repository.ArticleRepository;
 import com.bigdata.demo.enums.ResponseEnum;
 import com.bigdata.demo.form.PlanCostSharesAddForm;
 import com.bigdata.demo.service.IPlanCostSharesService;
@@ -22,11 +23,15 @@ public class PlanCostSharesServiceImpl implements IPlanCostSharesService {
 
   private Gson gson = new Gson();
 
+//  @Autowired
+//  private ArticleRepository articleRepository;
+
   @Override
   public ResponseVo<PlanCostSharesVo> addUseCase(String oid,PlanCostSharesAddForm form){
 
     HashOperations<String,String,String> opsForHash = redisTemplate.opsForHash();
     opsForHash.put("useCase",oid,gson.toJson(form));
+
 
     return ResponseVo.success("SUCCESS");
   }
@@ -37,6 +42,7 @@ public class PlanCostSharesServiceImpl implements IPlanCostSharesService {
     //write into redis
     HashOperations<String,String,String> opsForHash = redisTemplate.opsForHash();
     opsForHash.put("linkedPlanService",oid,gson.toJson(form));
+//    articleRepository.save(form);
 
     return ResponseVo.success("SUCCESS");
   }
