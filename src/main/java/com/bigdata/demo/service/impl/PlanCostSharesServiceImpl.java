@@ -43,7 +43,7 @@ public class PlanCostSharesServiceImpl implements IPlanCostSharesService {
 
   @Override
   public void delete(String oid){
-    redisTemplate.delete(oid);
+    redisTemplate.opsForHash().delete("linkedPlanService",oid);
   }
 
   @Override

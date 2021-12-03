@@ -55,13 +55,13 @@ public class PlanCostSharesController {
     return planCostSharesService.addUseCase(planCostSharesAddForm.getObjectId(),planCostSharesAddForm);
   }
 
-  @PostMapping("/planCostShares")
+  @PostMapping("/plan/{oid}")
   public ResponseVo<PlanCostSharesVo> add(@Valid @RequestBody PlanCostSharesAddForm planCostSharesAddForm){
 
     return planCostSharesService.add2list(planCostSharesAddForm.getObjectId(),planCostSharesAddForm);
   }
 
-  @DeleteMapping("/planCostSharesDelete/{oid}")
+  @DeleteMapping("/plan/{oid}")
   public ResponseVo<PlanCostSharesVo> delete(@PathVariable String oid){
      planCostSharesService.delete(oid);
      return ResponseVo.success("SUCCESS");
@@ -94,11 +94,6 @@ public class PlanCostSharesController {
 //
     UseCaseVo useCaseVo = new UseCaseVo();
     List<PlanCostSharesVo> planCostSharesVoList = new ArrayList<>();
-    //test1
-
-//    planCostSharesVoList.add(new PlanCostSharesVo("123"));
-//    planCostSharesVoList.add(new PlanCostSharesVo("cc"));
-    //test1
 
     //pass through and transfer data to PlanCostSharesVo
     for (Map.Entry<String, String> entry : entries.entrySet()){
@@ -116,7 +111,7 @@ public class PlanCostSharesController {
   }
 
 
-  @GetMapping("/planCostShares/{oid}")
+  @GetMapping("/plan/{oid}")
   public ResponseEntity<Map> query( @PathVariable String oid,@RequestHeader HttpHeaders requestHeaders){
     PlanCostSharesVo planCostSharesVo = new PlanCostSharesVo();
 
@@ -131,24 +126,28 @@ public class PlanCostSharesController {
     }else {
       return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
-
-   
-
-//    return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
-//    return ResponseEntity.ok().eTag("ETAG"+"028d7d664f6cb75399622ead2005").body(map1);
   }
 
-  @PutMapping("/updatePlan/{oid}")
-  public ResponseVo<PlanCostSharesVo> update(@PathVariable String oid, @Valid @RequestBody PlanCostSharesVo planCostSharesVoForm ){
-    System.out.println(planCostSharesVoForm.get_org());
-    System.out.println("planCostSharesVoForm.get_org()");
-      return planCostSharesService.update(oid,planCostSharesVoForm);
+//  @PatchMapping("/updatePlan/{oid}")
+//  public ResponseVo<PlanCostSharesVo> update(@PathVariable String oid, @Valid @RequestBody PlanCostSharesVo planCostSharesVoForm){
+//    System.out.println(planCostSharesVoForm.get_org());
+//    System.out.println("planCostSharesVoForm.get_org()");
+//      return planCostSharesService.update(oid,planCostSharesVoForm);
+//  }
+
+  @PatchMapping("/plan/{oid}")
+  public ResponseEntity<String> update(@PathVariable String oid, @Valid @RequestBody PlanCostSharesVo planCostSharesVoForm,@RequestHeader HttpHeaders requestHeaders){
+    String currentETag = "ETAG" + oid;
+    String reqETag = requestHeaders.getFirst("If-None-Match");
+    System.out.println(reqETag);
+    if (reqETag == null || !reqETag.equals(currentETag)){
+      planCostSharesService.update(oid,planCostSharesVoForm);
+      return ResponseEntity.ok().eTag(currentETag).body("Update Completed");
+    }else {
+      return ResponseEntity.ok().eTag(currentETag).body("Nothing Updated");
+    }
   }
 
-  @PostMapping("/update3")
-  public Integer update2(){
-    return 8;
-  }
 
 
 }

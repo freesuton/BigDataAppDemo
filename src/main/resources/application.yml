@@ -13,3 +13,8 @@ spring:
             scope:
             - email
             - profile
+
+#es的配置
+  spring.elasticsearch.rest.uris=http://127.0. 0.1:9200
+  spring.data.elasticsearch.repositories.enabled=true
+  spring.data.elasticsearch.client.reactive.endpoints=127.0. 0.1:9200
