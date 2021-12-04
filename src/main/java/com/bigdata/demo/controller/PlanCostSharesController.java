@@ -1,7 +1,10 @@
 package com.bigdata.demo.controller;
 
+import com.bigdata.demo.domain.repository.PlanCostShareRepository;
 import com.bigdata.demo.form.PlanCostSharesAddForm;
 import com.bigdata.demo.form.SimpleForm;
+import com.bigdata.demo.model.es.Article;
+import com.bigdata.demo.model.es.Author;
 import com.bigdata.demo.service.IPlanCostSharesService;
 import com.bigdata.demo.vo.LinkedPlanCostSharesListVo;
 import com.bigdata.demo.vo.PlanCostSharesVo;
@@ -9,6 +12,7 @@ import com.bigdata.demo.vo.ResponseVo;
 import com.bigdata.demo.vo.UseCaseVo;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +20,8 @@ import java.util.Objects;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +55,9 @@ public class PlanCostSharesController {
 
   private Gson gson = new Gson();
 
+  @Autowired
+  private PlanCostShareRepository planCostShareRepository;
+
   @PostMapping("/addUseCase")
   public ResponseVo<PlanCostSharesVo> addUsecase(@Valid @RequestBody PlanCostSharesAddForm planCostSharesAddForm){
 
@@ -57,13 +66,16 @@ public class PlanCostSharesController {
 
   @PostMapping("/plan/{oid}")
   public ResponseVo<PlanCostSharesVo> add(@Valid @RequestBody PlanCostSharesAddForm planCostSharesAddForm){
-
+    planCostShareRepository.save(planCostSharesAddForm);
     return planCostSharesService.add2list(planCostSharesAddForm.getObjectId(),planCostSharesAddForm);
   }
 
   @DeleteMapping("/plan/{oid}")
   public ResponseVo<PlanCostSharesVo> delete(@PathVariable String oid){
      planCostSharesService.delete(oid);
+    Page<PlanCostSharesAddForm> planCostSharesAddForm = planCostShareRepository.findByObjectId(oid,PageRequest.of(0,10));
+    PlanCostSharesAddForm form = planCostSharesAddForm.getContent().get(0);
+    planCostShareRepository.delete(form);
      return ResponseVo.success("SUCCESS");
   }
 
@@ -135,13 +147,22 @@ public class PlanCostSharesController {
 //      return planCostSharesService.update(oid,planCostSharesVoForm);
 //  }
 
-  @PatchMapping("/plan/{oid}")
+  @PutMapping("/plan/{oid}")
   public ResponseEntity<String> update(@PathVariable String oid, @Valid @RequestBody PlanCostSharesVo planCostSharesVoForm,@RequestHeader HttpHeaders requestHeaders){
     String currentETag = "ETAG" + oid;
     String reqETag = requestHeaders.getFirst("If-None-Match");
     System.out.println(reqETag);
     if (reqETag == null || !reqETag.equals(currentETag)){
       planCostSharesService.update(oid,planCostSharesVoForm);
+      Page<PlanCostSharesAddForm> planCostSharesAddForms = planCostShareRepository.findByObjectId(oid,PageRequest.of(0,10));
+
+      PlanCostSharesAddForm form = planCostSharesAddForms.getContent().get(0);
+      form.set_org(planCostSharesVoForm.get_org());
+      form.setCopay(planCostSharesVoForm.getCopay());
+      form.setObjectId(planCostSharesVoForm.getObjectId());
+      form.setObjectType(planCostSharesVoForm.getObjectType());
+      form.setDeductible(planCostSharesVoForm.getDeductible());
+      planCostShareRepository.save(form);
       return ResponseEntity.ok().eTag(currentETag).body("Update Completed");
     }else {
       return ResponseEntity.ok().eTag(currentETag).body("Nothing Updated");
@@ -149,5 +170,34 @@ public class PlanCostSharesController {
   }
 
 
+  //es search
+  @GetMapping("/plan_es/{words}")
+  public Page<PlanCostSharesAddForm> search( @PathVariable String words,@RequestHeader HttpHeaders requestHeaders){
+    List<PlanCostSharesAddForm> PlanCostSharesAddFormArray = new ArrayList<>();
+    Page<PlanCostSharesAddForm> PlanCostSharesAddForms = planCostShareRepository.findByObjectId(words, PageRequest.of(0,10));
+//    for (PlanCostSharesAddForm planCostSharesAddForm : PlanCostSharesAddForms.getContent()) {
+//
+//
+//    }
+    return PlanCostSharesAddForms;
+  }
+
+  //es update
+  @PutMapping("/plan_es/{oid}")
+  public void updateES(@PathVariable String oid, @RequestBody PlanCostSharesAddForm planCostSharesAddForm) {
+    Page<PlanCostSharesAddForm> planCostSharesAddForms = planCostShareRepository.findByObjectId(oid,PageRequest.of(0,10));
+
+    PlanCostSharesAddForm form = planCostSharesAddForms.getContent().get(0);
+
+    planCostShareRepository.save(planCostSharesAddForm);
+  }
+
+  //es delete
+  @DeleteMapping("/plan_es/{oid}")
+  public void deleteES(@PathVariable String oid){
+    Page<PlanCostSharesAddForm> planCostSharesAddForm = planCostShareRepository.findByObjectId(oid,PageRequest.of(0,10));
+    PlanCostSharesAddForm form = planCostSharesAddForm.getContent().get(0);
+    planCostShareRepository.delete(form);
+  }
 
 }

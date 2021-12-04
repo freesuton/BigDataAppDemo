@@ -10,9 +10,9 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "plan")
 @Data
 public class PlanCostShareES {
-//  @Id
-//  private String oid;
-//  private String _org;
+  @Id
+  private String oid;
+  private String _org;
 //  @Field(type = FieldType.Nested, includeInParent = true)
 //  private List<Author> authors;
 

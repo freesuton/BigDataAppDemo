@@ -6,10 +6,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 /**
  * Add Information
  */
+@Document(indexName = "plan")
 @Data
 public class PlanCostSharesAddForm {
 
@@ -23,6 +26,7 @@ public class PlanCostSharesAddForm {
   private Integer copay;
 
   @NotEmpty
+  @Id
   private String objectId;
 
   private String objectType;
